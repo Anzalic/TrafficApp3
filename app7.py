@@ -37,7 +37,8 @@ else:
     st.error("Failed to load the model. Please check the model URL.")
 
 
-
+# Now you can use the 'model' variable for predictions
+prediction = model.predict(df_pred)
 
 
 
