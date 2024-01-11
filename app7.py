@@ -17,7 +17,8 @@ data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_d
 
 # Load the data directly from the GitHub raw URL
 data = pd.read_csv(data_url)
-# Specify the direct download URL of the model file from Google Drive
+
+# Specify the direct download URL of the model file from Google Drive (replace 'YOUR_FILE_ID' with the actual file ID)
 model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
 
 # Function to download the model from Google Drive
