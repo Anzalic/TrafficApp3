@@ -1,14 +1,9 @@
 import streamlit as st
 import pandas as pd
 import os
-
 import joblib
-
-
-
 import requests
-from io import BytesIO
-
+from io import BytesIO, StringIO
 
 # Specify the direct raw URL of the CSV data file on GitHub
 data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
@@ -30,7 +25,16 @@ def download_model_from_drive(model_url):
 # Load the model from Google Drive
 model_file = download_model_from_drive(model_url)
 if model_file is not None:
-    model = joblib.load(model_file)
+    # Save the model file to a temporary file
+    temp_model_path = 'temp_model.joblib'
+    with open(temp_model_path, 'wb') as temp_model_file:
+        temp_model_file.write(model_file.read())
+    
+    # Load the model from the temporary file
+    model = joblib.load(temp_model_path)
+    
+    # Remove the temporary file
+    os.remove(temp_model_path)
 else:
     st.error("Failed to load the model. Please check the model URL.")
 
