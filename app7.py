@@ -1,14 +1,8 @@
 import streamlit as st
 import pandas as pd
-import os
-
 import joblib
-
-
-
 import requests
 from io import BytesIO
-
 
 # Specify the direct raw URL of the CSV data file on GitHub
 data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
@@ -16,26 +10,22 @@ data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_d
 # Load the data directly from the GitHub raw URL
 data = pd.read_csv(data_url)
 
-# Specify the direct download URL of the model file from Google Drive (replace 'YOUR_FILE_ID' with the actual file ID)
-model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
+# Direct download URL for the model file from GitHub release
+model_url = 'https://github.com/Anzalic/TrafficApp3/releases/download/v1.0.0/traffic_congestion_model_2.pkl'
 
-# Function to download the model from Google Drive
-def download_model_from_drive(model_url):
+# Function to download the model from GitHub release
+@st.cache(allow_output_mutation=True)
+def download_model(model_url):
     response = requests.get(model_url)
     if response.status_code == 200:
-        return BytesIO(response.content)
+        model_file = BytesIO(response.content)
+        return joblib.load(model_file)
     else:
+        st.error("Failed to load the model. Please check the model URL.")
         return None
 
-# Load the model from Google Drive
-model_file = download_model_from_drive(model_url)
-if model_file is not None:
-    model = joblib.load(model_file)
-else:
-    st.error("Failed to load the model. Please check the model URL.")
-
-
-
+# Load the model
+model = download_model(model_url)
 
 
 
@@ -125,16 +115,19 @@ road_type_container.info(f"Road Type: {selected_road_type}")  # Update the place
 
 # Prepare the user inputs for prediction
 if st.button('Predict'):
-    inputs = [
-        direction_of_travel_mapping.get(direction_of_travel, -1),
-        hour,
-        0,  # For 'London' in 'region_name'
-        local_authority_name_mapping.get(local_authority_name, -1),
-        road_name_mapping.get(selected_road_name, -1),
-        road_type_mapping.get(selected_road_type, -1)
-    ]
-    df_pred = pd.DataFrame([inputs], columns=['direction_of_travel', 'hour', 'region_name', 'local_authority_name', 'road_name', 'road_type'])
-    
-    prediction = model.predict(df_pred)
-    congestion_pred = congestion_level_decoder.get(int(prediction[0]), 'Unknown')
-    st.write(f"Predicted Congestion Level: {congestion_pred}")
+    if model is not None:
+        inputs = [
+            direction_of_travel_mapping.get(direction_of_travel, -1),
+            hour,
+            0,  # For 'London' in 'region_name'
+            local_authority_name_mapping.get(local_authority_name, -1),
+            road_name_mapping.get(selected_road_name, -1),
+            road_type_mapping.get(selected_road_type, -1)
+        ]
+        df_pred = pd.DataFrame([inputs], columns=['direction_of_travel', 'hour', 'region_name', 'local_authority_name', 'road_name', 'road_type'])
+        
+        prediction = model.predict(df_pred)
+        congestion_pred = congestion_level_decoder.get(int(prediction[0]), 'Unknown')
+        st.write(f"Predicted Congestion Level: {congestion_pred}")
+    else:
+        st.error("Model not loaded. Cannot predict.")
