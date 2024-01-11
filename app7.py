@@ -6,15 +6,67 @@ import os
 
 import joblib
 
-# Replace the model_path and data_path with the updated URLs
 
-# Define the absolute paths to your model and data files on Streamlit Sharing
-model_url = 'https://github.com/Anzalic/TrafficApp3/raw/main/traffic_congestion_model_2.pkl'
+
+import requests
+from io import BytesIO
+
+
+# Specify the direct raw URL of the CSV data file on GitHub
 data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
 
-# Load the model and data using the updated URLs
-model = joblib.load(model_url)
+# Load the data directly from the GitHub raw URL
 data = pd.read_csv(data_url)
+# Specify the direct download URL of the model file from Google Drive
+model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
+
+# Function to download the model from Google Drive
+def download_model_from_drive(model_url):
+    response = requests.get(model_url)
+    if response.status_code == 200:
+        return BytesIO(response.content)
+    else:
+        return None
+
+# Load the model from Google Drive
+model_file = download_model_from_drive(model_url)
+if model_file is not None:
+    model = joblib.load(model_file)
+else:
+    st.error("Failed to load the model. Please check the model URL.")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
