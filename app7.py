@@ -31,12 +31,14 @@ if model_file is not None:
         temp_model_file.write(model_file.read())
     
     # Load the model from the temporary file
+st.write(f"Attempting to load the model from: {temp_model_path}")
+try:
     model = joblib.load(temp_model_path)
-    
-    # Remove the temporary file
-    os.remove(temp_model_path)
-else:
-    st.error("Failed to load the model. Please check the model URL.")
+    st.write("Model loaded successfully")
+except Exception as e:
+    st.error(f"Failed to load the model. Error: {str(e)}")
+
+
 
 
 
