@@ -6,12 +6,19 @@ import os
 
 import joblib
 
+# Replace the model_path and data_path with the updated URLs
+
+# Define the absolute paths to your model and data files on Streamlit Sharing
+model_url = 'https://github.com/Anzalic/TrafficApp3/raw/main/traffic_congestion_model_2.pkl'
+data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
+
+# Load the model and data using the updated URLs
+model = joblib.load(model_url)
+data = pd.read_csv(data_url)
 
 
 
-# Load the model and data
-model = joblib.load('traffic_congestion_model_2.pkl')
-data = pd.read_csv('cleaned_data_for_web_2.csv')
+
 
 # Set up the title of the web app
 st.write("# Traffic Congestion Prediction For London")
