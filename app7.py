@@ -17,15 +17,19 @@ data = load_data()
 def load_model():
     model_url = 'https://drive.google.com/uc?export=download&id=19jL8RMELs7ophfs7MZNj918OKXq2GS0i'
     response = requests.get(model_url)
-    if response.status_code == 200:
-        model_file = BytesIO(response.content)
-        model = joblib.load(model_file)
-        return model
-    else:
-        st.error("Failed to download the model")
+    
+    if response.status_code != 200:
+        st.error("Failed to download the model due to a bad response from server.")
         return None
 
-model = load_model()
+    model_file = BytesIO(response.content)
+
+    try:
+        model = joblib.load(model_file)
+        return model
+    except Exception as e:
+        st.error(f"Error loading model: {e}")
+        return None
 
 
 
