@@ -129,8 +129,7 @@ selected_road_type = get_road_type(selected_road_name)
 road_type_container = col3.empty()  # Create a placeholder
 road_type_container.info(f"Road Type: {selected_road_type}")  # Update the placeholder with road type info
 
-# Prepare the user inputs for prediction
-if st.button('Predict'):
+if model is not None:  # Check if the model was successfully loaded
     inputs = [
         direction_of_travel_mapping.get(direction_of_travel, -1),
         hour,
@@ -140,7 +139,9 @@ if st.button('Predict'):
         road_type_mapping.get(selected_road_type, -1)
     ]
     df_pred = pd.DataFrame([inputs], columns=['direction_of_travel', 'hour', 'region_name', 'local_authority_name', 'road_name', 'road_type'])
-    
+
     prediction = model.predict(df_pred)
     congestion_pred = congestion_level_decoder.get(int(prediction[0]), 'Unknown')
     st.write(f"Predicted Congestion Level: {congestion_pred}")
+else:
+    st.error("Failed to load the model. Please check the model file and permissions.")
