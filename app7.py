@@ -8,7 +8,7 @@ import joblib
 
 
 # Load the model and data
-model = joblib.load('traffic_congestion_model.pkl')
+model = joblib.load('traffic_congestion_model_2.pkl')
 data = pd.read_csv('cleaned_data_for_web_2.csv')
 
 # Set up the title of the web app
