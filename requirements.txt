@@ -1,6 +1,5 @@
 streamlit
 pandas
 numpy
-os
 # any other packages your app uses
 
