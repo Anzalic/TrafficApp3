@@ -1,35 +1,39 @@
 import streamlit as st
 import pandas as pd
+import os
+
 import joblib
+
+
+
 import requests
 from io import BytesIO
 
-# Load data from GitHub
-@st.cache
-def load_data():
-    data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
-    return pd.read_csv(data_url)
 
-data = load_data()
+# Specify the direct raw URL of the CSV data file on GitHub
+data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
 
-# Download and load the model
-@st.cache(allow_output_mutation=True)
-def load_model():
-    model_url = 'https://drive.google.com/uc?export=download&id=19jL8RMELs7ophfs7MZNj918OKXq2GS0i'
+# Load the data directly from the GitHub raw URL
+data = pd.read_csv(data_url)
+
+# Specify the direct download URL of the model file from Google Drive (replace 'YOUR_FILE_ID' with the actual file ID)
+model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
+
+# Function to download the model from Google Drive
+def download_model_from_drive(model_url):
     response = requests.get(model_url)
-    
-    if response.status_code != 200:
-        st.error("Failed to download the model due to a bad response from server.")
+    if response.status_code == 200:
+        return BytesIO(response.content)
+    else:
         return None
 
-    model_file = BytesIO(response.content)
+# Load the model from Google Drive
+model_file = download_model_from_drive(model_url)
+if model_file is not None:
+    model = joblib.load(model_file)
+else:
+    st.error("Failed to load the model. Please check the model URL.")
 
-    try:
-        model = joblib.load(model_file)
-        return model
-    except Exception as e:
-        st.error(f"Error loading model: {e}")
-        return None
 
 
 
@@ -120,7 +124,7 @@ road_type_container = col3.empty()  # Create a placeholder
 road_type_container.info(f"Road Type: {selected_road_type}")  # Update the placeholder with road type info
 
 # Prepare the user inputs for prediction
-if model and st.button('Predict'):
+if st.button('Predict'):
     inputs = [
         direction_of_travel_mapping.get(direction_of_travel, -1),
         hour,
@@ -130,6 +134,7 @@ if model and st.button('Predict'):
         road_type_mapping.get(selected_road_type, -1)
     ]
     df_pred = pd.DataFrame([inputs], columns=['direction_of_travel', 'hour', 'region_name', 'local_authority_name', 'road_name', 'road_type'])
+    
     prediction = model.predict(df_pred)
     congestion_pred = congestion_level_decoder.get(int(prediction[0]), 'Unknown')
     st.write(f"Predicted Congestion Level: {congestion_pred}")
