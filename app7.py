@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import pandas as pd
 import os
@@ -19,9 +17,7 @@ data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_d
 data = pd.read_csv(data_url)
 
 # Specify the direct download URL of the model file from Google Drive (replace 'YOUR_FILE_ID' with the actual file ID)
-# Specify the direct download URL of the model file from Google Drive
-model_url = 'https://drive.google.com/uc?export=download&id=19jL8RMELs7ophfs7MZNj918OKXq2GS0i'  # Replace with your file ID
-
+model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
 
 # Function to download the model from Google Drive
 def download_model_from_drive(model_url):
@@ -142,4 +138,3 @@ if st.button('Predict'):
     prediction = model.predict(df_pred)
     congestion_pred = congestion_level_decoder.get(int(prediction[0]), 'Unknown')
     st.write(f"Predicted Congestion Level: {congestion_pred}")
-
