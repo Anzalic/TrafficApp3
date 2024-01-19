@@ -10,13 +10,13 @@ import requests
 from io import BytesIO
 
 
-# Specify the direct raw URL of the CSV data file on GitHub
+
 data_url = 'https://raw.githubusercontent.com/Anzalic/TrafficApp3/main/cleaned_data_for_web_2.csv'
 
-# Load the data directly from the GitHub raw URL
+
 data = pd.read_csv(data_url)
 
-# Specify the direct download URL of the model file from Google Drive (replace 'YOUR_FILE_ID' with the actual file ID)
+
 model_url = 'https://drive.google.com/uc?export=download&id=YOUR_FILE_ID'
 
 # Function to download the model from Google Drive
@@ -27,7 +27,7 @@ def download_model_from_drive(model_url):
     else:
         return None
 
-# Load the model from Google Drive
+
 model_file = download_model_from_drive(model_url)
 if model_file is not None:
     model = joblib.load(model_file)
@@ -71,10 +71,10 @@ else:
 
 
 
-# Set up the title of the web app
+
 st.write("# Traffic Congestion Prediction For London")
 
-# Define your mappings
+
 direction_of_travel_mapping = {'E': 0, 'N': 1, 'S': 2, 'W': 3}
 local_authority_name_mapping = {'Barking and Dagenham': 0, 'Barnet': 1, 'Bexley': 2, 'Brent': 3, 'Bromley': 4, 'Camden': 5, 'City of London': 6, 'Croydon': 7, 'Ealing': 8, 'Enfield': 9, 'Greenwich': 10, 'Hackney': 11, 'Hammersmith and Fulham': 12, 'Haringey': 13, 'Harrow': 14, 'Havering': 15, 'Hillingdon': 16, 'Hounslow': 17, 'Islington': 18, 'Kensington and Chelsea': 19, 'Kingston upon Thames': 20, 'Lambeth': 21, 'Lewisham': 22, 'Merton': 23, 'Newham': 24, 'Redbridge': 25, 'Richmond upon Thames': 26, 'Southwark': 27, 'Sutton': 28, 'Tower Hamlets': 29, 'Waltham Forest': 30, 'Wandsworth': 31, 'Westminster': 32}  # Complete this with all mappings
 
@@ -90,28 +90,27 @@ road_type_mapping = {'Major': 0, 'Minor': 1}
 congestion_level_mapping = {'blockage': 0, 'congested': 1, 'highly_congested': 2, 'slightly_congested': 3, 'smooth': 4}
 
 
-# Reverse the congestion_level_mapping to create a decoder
+
 congestion_level_decoder = {v: k for k, v in congestion_level_mapping.items()}
 
-# Define a function to get filtered roads based on the selected local authority
+
 def get_filtered_roads(local_authority):
     return data[data['local_authority_name'] == local_authority]['road_name'].unique()
 
-# Define a function to get the road type for a given road name
 def get_road_type(road_name):
     road_info = data[data['road_name'] == road_name].iloc[0]
     return road_info['road_type']  # Adjust this if your column name is different
 
-# Create columns for the layout
+
 col1, col2, col3 = st.columns(3)
 
-# Get user inputs
+
 direction_of_travel = col1.selectbox("Direction of Travel", list(direction_of_travel_mapping.keys()), key='direction_of_travel_select')
 hour = col2.select_slider("Select hour of the day", options=[7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18], key='hour_select')
 region_name = col3.selectbox("Select Region", ['London'], key='region_select')
 local_authority_name = col1.selectbox("Local Authority", list(local_authority_name_mapping.keys()), key='local_authority_select')
 
-# Dynamically get the filtered road names based on the selected local authority
+
 filtered_road_names = get_filtered_roads(local_authority_name)
 selected_road_name = col2.selectbox("Road Name", filtered_road_names, key='road_name_select')
 
